@@ -3,7 +3,7 @@ import AppWrapper from "../AppWrapper/AppWrapper";
 import Wallet from "./Wallet";
 import SetWallet from "./SetWallet";
 import Typography from '@mui/material/Typography';
-import "./WalletStyles.css";
+import "./walletStyles.css";
 
 const LandingPage = ({ walletId }) => {
   return (

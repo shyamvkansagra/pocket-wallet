@@ -82,7 +82,7 @@ import Transactions from "./components/Transactions/index";
 import { getLocal } from "./Utils/utils";
 
 const App = () => {
-	const [walletId, setWalletId] = useState("123");
+	const [walletId, setWalletId] = useState("");
 
 	useEffect(() => {
 		const walletId = getLocal("walletId");

@@ -11,7 +11,7 @@ import {
 	Stack
 } from '@mui/material';
 
-import "./WalletStyles.css";
+import "./walletStyles.css";
 
 const Wallet = () => {
 	return (

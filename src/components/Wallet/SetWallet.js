@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 
-import "./WalletStyles.css";
+import "./walletStyles.css";
 
 const SetWallet = () => {
 	return (
