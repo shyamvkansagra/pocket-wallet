@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
 	ToggleButtonGroup,
 	ToggleButton,
@@ -12,13 +12,29 @@ import {
 } from '@mui/material';
 
 import "./walletStyles.css";
+import axios from "axios";
 
-const Wallet = () => {
+const Wallet = ({ walletId }) => {
+	const [walletInfo, setWalletInfo] = useState({});
+	useEffect(() => {
+		axios
+			.get(`/wallet/${walletId}`).then((response) => {
+				// setUsers(users)
+				if (response.status === 200) {
+					const [walletData] = response.data;
+					setWalletInfo({
+						userName: walletData.userName,
+						balance: walletData.balance
+					});
+				}
+			})
+			.catch((err) => console.log(err));
+	}, [walletId]);
 	return (
 		<div className="set-wallet-container">
 			<Stack direction="row" spacing={2} sx={{ marginBottom: "20px", display: "flex", justifyContent: "space-around" }}>
-						<Typography sx={{fontWeight: "bold"}}>Username: Shyam</Typography>
-						<Typography sx={{fontWeight: "bold"}}>Balance: 30.0045</Typography>
+						<Typography variant="h6" sx={{fontWeight: "bold"}}>{`Username: ${walletInfo.userName}`}</Typography>
+						<Typography variant="h6" sx={{fontWeight: "bold"}}>{`Balance: ${walletInfo.balance}`}</Typography>
 					</Stack>
 			<Card>
 				<CardContent>

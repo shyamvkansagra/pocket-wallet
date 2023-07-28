@@ -1,14 +1,32 @@
-import React from "react";
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
+import React, { useState } from "react";
+import axios from 'axios';
+import { Box, Card, CardContent, Typography, TextField, Button } from '@mui/material';
 
+import { setLocal } from "../../Utils/utils";
 import "./walletStyles.css";
 
 const SetWallet = () => {
+	const [userName, setUserName] = useState("");
+	const [balance, setBalance] = useState(0);
+	const submitWalletData = () => {
+		axios
+			.post("/setup", {
+				userName,
+				balance,
+			})
+			.then(function (d) {
+				const resData = d.data;
+				if (resData.code === 200) {
+					setLocal("walletId", resData.data._id);
+				}
+			})
+			.catch(function () {
+				alert("Could not create wallet. Please try again");
+			});
+	}
+	const handleUserNameChange = (e) => setUserName(e.target.value);
+	const handleBalanceChange = (e) => setBalance(e.target.value);
+	
 	return (
 		<div className="set-wallet-container">
 			<Card>
@@ -28,14 +46,24 @@ const SetWallet = () => {
 								fullWidth
 								id="outlined-required"
 								label="Username"
+								onChange={handleUserNameChange}
 							/>
 							<TextField
 								fullWidth
 								id="outlined-required"
 								label="Initial Balance"
 								margin="normal"
+								type="number"
+								onChange={handleBalanceChange}
 							/>
-							<Button sx={{ marginTop: "20px" }} fullWidth variant="contained">Submit</Button>
+							<Button
+								sx={{ marginTop: "20px" }}
+								fullWidth
+								variant="contained"
+								onClick={() => {
+									submitWalletData();
+								}}
+							>Submit</Button>
 						</CardContent>
 					</Box>
 				</CardContent>
