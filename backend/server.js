@@ -11,8 +11,10 @@ app.use(cors());
 // API
 // const users = require('./api/users');
 const wallet = require('./api/wallet');
+const transaction = require('./api/transaction');
 // app.use('/api/users', users);
 app.use('/', wallet);
+app.use('/', transaction);
 
 app.use(express.static(path.join(__dirname, '../build')))
 app.get('*', (req, res) => {

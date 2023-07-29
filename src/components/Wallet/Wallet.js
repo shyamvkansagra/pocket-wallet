@@ -16,6 +16,13 @@ import axios from "axios";
 
 const Wallet = ({ walletId }) => {
 	const [walletInfo, setWalletInfo] = useState({});
+	const [type, setType] = useState("credit");
+	const [amount, setAmount] = useState(undefined);
+	const [description, setDescription] = useState("");
+	const handleAmountChange = e => setAmount(e.target.value);
+	const handleDescriptionChange = e => setDescription(e.target.value);
+	const handleTypeChange = (e) => setType(e.target.value);
+
 	useEffect(() => {
 		axios
 			.get(`/wallet/${walletId}`).then((response) => {
@@ -30,6 +37,32 @@ const Wallet = ({ walletId }) => {
 			})
 			.catch((err) => console.log(err));
 	}, [walletId]);
+
+	const handleSubmit = () => {
+		axios
+			.post(`/transact/${walletId}`, {
+				amount: +amount,
+				description,
+				type
+			})
+			.then(res => {
+				const resJson = res.data;
+				console.log(resJson);
+				if (resJson.status === 200) {
+					setWalletInfo({
+						...walletInfo,
+						balance: resJson.data.balance
+					});
+					setAmount(0);
+					setDescription("");
+				}
+				// console.log(res);
+			})
+			.catch(err => {
+				console.error(err);
+			})
+	}
+
 	return (
 		<div className="set-wallet-container">
 			<Stack direction="row" spacing={2} sx={{ marginBottom: "20px", display: "flex", justifyContent: "space-around" }}>
@@ -45,7 +78,7 @@ const Wallet = ({ walletId }) => {
 						}}
 					>
 						<span className="setup-form-heading">
-							<Typography>Make a transition</Typography>
+							<Typography>Make a transaction</Typography>
 						</span>
 						<CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
 							<TextField
@@ -53,19 +86,37 @@ const Wallet = ({ walletId }) => {
 								fullWidth
 								id="outlined-required"
 								label="Amount"
+								type="number"
+								inputProps={{min: 0}}
+								onChange={handleAmountChange}
+								value={amount}
+							/>
+							<TextField
+								required
+								fullWidth
+								id="outlined-required"
+								label="Description"
+								margin="normal"
+								onChange={handleDescriptionChange}
+								value={description}
 							/>
 							<ToggleButtonGroup
 								color="primary"
-								value="credit"
+								value={type}
 								exclusive
-								onChange={() => {}}
+								onChange={handleTypeChange}
 								aria-label="Transaction-Type"
 								sx={{ marginTop: "20px" }}
 							>
-								<ToggleButton value="credit">Credit</ToggleButton>
-								<ToggleButton value="debit">Debit</ToggleButton>
+								<ToggleButton sx={{ minWidth: "80px" }} value="credit">Credit</ToggleButton>
+								<ToggleButton sx={{ minWidth: "80px" }} value="debit">Debit</ToggleButton>
 							</ToggleButtonGroup>
-							<Button sx={{ marginTop: "20px" }} fullWidth variant="contained">Submit</Button>
+							<Button
+								sx={{ marginTop: "20px" }}
+								fullWidth
+								variant="contained"
+								onClick={handleSubmit}
+							>Submit</Button>
 						</CardContent>
 					</Box>
 				</CardContent>

@@ -22,6 +22,10 @@ const transitionSchema = new Schema({
 			type: String,
 			required: true
 		},
+		transactionId: {
+			type: String,
+			required: true
+		},
 		createdDate: {
 			type: Date,
 			default: Date.now
