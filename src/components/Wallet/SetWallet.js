@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 
-import { setLocal } from "../../utils/utils";
+import { setLocal } from "../../Utils/utils";
 import "./walletStyles.css";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
