@@ -90,8 +90,7 @@ const headCells = [
 ];
 
 function EnhancedTableHead(props) {
-  const { order, orderBy, onRequestSort } =
-    props;
+  const { order, orderBy, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -167,6 +166,9 @@ const Transactions = ({ walletId }) => {
   };
 
   const handleChangePage = (event, newPage) => {
+    if (newPage > page && rows.length < rowCount) {
+      fetchData(newPage*10, 10);
+    }
     setPage(newPage);
   };
 
@@ -188,16 +190,16 @@ const Transactions = ({ walletId }) => {
         .get(`/transactions?walletId=${walletId}&skip=${skip}&limit=${limit}`)
         .then(response => {
           const { data } = response;
-          console.log(data);
-          setRows(data[0].totalData);
-          setRowCount(data[0].totalCount[0].count)
+          setRows([...rows, ...data[0].totalData]);
+          setRowCount(data[0].totalCount[0].count);
         });
-  }, [walletId])
+  }, [rows, walletId]);
+
   useEffect(() => {
-    if (walletId) {
+    if (!rows.length && walletId) {
       fetchData(0, 10);
     }
-  }, [fetchData, walletId]);
+  }, [rows, fetchData, walletId, rowCount]);
 	if (!walletId) {
 		return (
 			<AppWrapper walletId={walletId}>
