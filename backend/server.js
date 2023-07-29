@@ -7,7 +7,7 @@ require('./database');
 require("dotenv").config();
 
 const corsOptions = {
-    origin: "http://localhost:3000" // frontend URI (ReactJS)
+    origin: "https://pocket-wallet-ylp6.onrender.com" // frontend URI (ReactJS)
 }
 
 app.use(bodyParser.json());
