@@ -18,7 +18,7 @@ const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-const SetWallet = ({ setWalletId }) => {
+const SetWallet = ({ setWalletId, endpoint }) => {
 	const [userName, setUserName] = useState("");
 	const [balance, setBalance] = useState("");
 	const [isUserNameEmpty, setIsUserNameEmpty] = useState(false);
@@ -33,7 +33,7 @@ const SetWallet = ({ setWalletId }) => {
 			return;
 		}
 		axios
-			.post("/setup", {
+			.post(`${endpoint}/setup`, {
 				userName,
 				balance: +balance,
 			})

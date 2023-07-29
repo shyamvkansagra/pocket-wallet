@@ -19,7 +19,7 @@ const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-const Wallet = ({ walletId }) => {
+const Wallet = ({ walletId, endpoint }) => {
 	const [walletInfo, setWalletInfo] = useState({ userName: "Loading", balance: "Loading" });
 	const [type, setType] = useState("credit");
 	const [amount, setAmount] = useState(undefined);
@@ -40,7 +40,7 @@ const Wallet = ({ walletId }) => {
 
 	useEffect(() => {
 		axios
-			.get(`/wallet/${walletId}`).then((response) => {
+			.get(`${endpoint}/wallet/${walletId}`).then((response) => {
 				if (response.status === 200) {
 					const [walletData] = response.data;
 					setWalletInfo({
@@ -50,7 +50,7 @@ const Wallet = ({ walletId }) => {
 				}
 			})
 			.catch((err) => console.log(err));
-	}, [walletId]);
+	}, [walletId, endpoint]);
 
 	const handleSubmit = () => {
 		if (!amount || !description) {
@@ -62,7 +62,7 @@ const Wallet = ({ walletId }) => {
 			return;
 		}
 		axios
-			.post(`/transact/${walletId}`, {
+			.post(`${endpoint}/transact/${walletId}`, {
 				amount: +amount,
 				description,
 				type

@@ -4,6 +4,9 @@ import LandingPage from "./Components/Wallet/Home";
 import Transactions from "./Components/Transactions/Transactions";
 import { getLocal } from "./Utils/utils";
 
+const endpoint = "https://pocket-wallet-xlet.onrender.com";
+// const endpoint =  "http://localhost:5000";
+
 const App = () => {
 	const [walletId, setWalletId] = useState("");
 
@@ -16,8 +19,8 @@ const App = () => {
 	return (
 		<div className="App">
       <Routes>
-        <Route path="/" element={ <LandingPage walletId={walletId} setWalletId={setWalletId} /> } />
-        <Route path="transactions" element={ <Transactions walletId={walletId} /> } />
+        <Route path="/" element={ <LandingPage walletId={walletId} setWalletId={setWalletId} endpoint={endpoint} /> } />
+        <Route path="transactions" element={ <Transactions walletId={walletId} endpoint={endpoint} /> } />
       </Routes>
     </div>
 	);

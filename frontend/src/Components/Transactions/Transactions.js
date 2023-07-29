@@ -63,7 +63,7 @@ const headCells = [
   }
 ];
 
-const Transactions = ({ walletId }) => {
+const Transactions = ({ walletId, endpoint }) => {
   const rowsPerPage = 10;
 	const [order, setOrder] = React.useState('');
   const [orderBy, setOrderBy] = React.useState('');
@@ -151,7 +151,7 @@ const Transactions = ({ walletId }) => {
   
   const fetchData = useCallback((skip, limit, sortBy, sortOrder) => {
     axios
-        .get(`/transactions?walletId=${walletId}&skip=${skip}&limit=${limit}${sortBy ? `&sortBy=${sortBy}&sortOrder=${sortOrder}` : ""}`)
+        .get(`${endpoint}/transactions?walletId=${walletId}&skip=${skip}&limit=${limit}${sortBy ? `&sortBy=${sortBy}&sortOrder=${sortOrder}` : ""}`)
         .then(response => {
           const { data } = response;
           if (skip === 0) {
@@ -163,7 +163,7 @@ const Transactions = ({ walletId }) => {
           setNoData(false);
         })
         .catch(err => console.error(err.message));
-  }, [rows, walletId]);
+  }, [rows, walletId, endpoint]);
 
   useEffect(() => {
     if (!rows.length && walletId && noData) {
@@ -183,7 +183,7 @@ const Transactions = ({ walletId }) => {
 
   const fetchRawData = () => {
     axios
-      .get(`/transactions?walletId=${walletId}`)
+      .get(`${endpoint}/transactions?walletId=${walletId}`)
       .then(res => {
         setCsvData(res.data);
       })
