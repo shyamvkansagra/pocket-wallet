@@ -5,8 +5,12 @@ const path = require('path')
 const app = express();
 require('./database');
 
+const corsOptions = {
+    origin: "http://localhost:3000" // frontend URI (ReactJS)
+}
+
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors(corsOptions));
 
 // API
 const wallet = require('./api/wallet');
