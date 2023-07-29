@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom"
 import LandingPage from "./components/Wallet/index";
 import Transactions from "./components/Transactions/index";
-import { getLocal } from "./Utils/utils";
+import { getLocal } from "./utils/utils";
 
 const App = () => {
 	const [walletId, setWalletId] = useState("");

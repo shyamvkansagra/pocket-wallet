@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from 'axios';
 import { Box, Card, CardContent, Typography, TextField, Button } from '@mui/material';
 
-import { setLocal } from "../../Utils/utils";
+import { setLocal } from "../../utils/utils";
 import "./walletStyles.css";
 
 const SetWallet = ({ setWalletId }) => {
