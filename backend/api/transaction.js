@@ -48,17 +48,17 @@ router.post('/transact/:walletId', (req, res) => {
 });
 
 router.get('/transactions', (req, res) => {
-	const { walletId, skip, limit, sortBy } = req.query;
-	if (sortBy) {
+	const { walletId, skip, limit, sortBy, sortOrder } = req.query;
+	if (sortBy && sortOrder) {
 		const sortByVal = {};
-		sortByVal[sortBy.key] = sortBy.type;
+		sortByVal[sortBy] = +sortOrder;
 		Transaction.aggregate([
 			{ "$facet": {
 				"totalData": [
 					{ "$match": { "walletId": walletId }},
+					{ "$sort": sortByVal },
 					{ "$skip": +skip },
 					{ "$limit": +limit },
-					{ "$sort": sortByVal }
 				],
 				"totalCount": [
 					{ "$match": { "walletId": walletId }},
