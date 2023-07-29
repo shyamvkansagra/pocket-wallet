@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import AppWrapper from '../AppWrapper/AppWrapper';
 import axios from 'axios';
+import { CSVLink } from 'react-csv';
 import "./transactions.css";
 
 import {
@@ -61,31 +62,6 @@ const headCells = [
   }
 ];
 
-function EnhancedTableToolbar() {
-  return (
-    <Toolbar
-      sx={{
-        pl: { sm: 2 },
-        pr: { xs: 1, sm: 1 },
-      }}
-    >
-      <Typography
-        sx={{ flex: '1 1 100%' }}
-        variant="h6"
-        id="tableTitle"
-        component="div"
-      >
-        Transactions
-      </Typography>
-        <Tooltip title="Filter list">
-          <IconButton>
-            <FileDownloadIcon />
-          </IconButton>
-        </Tooltip>
-    </Toolbar>
-  );
-}
-
 const Transactions = ({ walletId }) => {
   const rowsPerPage = 10;
 	const [order, setOrder] = React.useState('');
@@ -93,7 +69,52 @@ const Transactions = ({ walletId }) => {
   const [page, setPage] = React.useState(0);
   const [rows, setRows] = useState([]);
   const [rowCount, setRowCount] = useState(rows.length);
+  const [csvData, setCsvData] = useState([]);
 
+  const csvLinkEl = useRef(null);
+  useEffect(() => {
+    if (csvData.length > 0) {
+      csvLinkEl.current.link.click();
+    }
+  }, [csvData])
+  function EnhancedTableToolbar() {
+    return (
+      <Toolbar
+        sx={{
+          pl: { sm: 2 },
+          pr: { xs: 1, sm: 1 },
+        }}
+      >
+        <Typography
+          sx={{ flex: '1 1 100%' }}
+          variant="h6"
+          id="tableTitle"
+          component="div"
+        >
+          Transactions
+        </Typography>
+          <Tooltip title="Download CSV">
+            <IconButton onClick={fetchRawData}>
+              <FileDownloadIcon />
+            </IconButton>
+          </Tooltip>
+          <CSVLink
+            headers={[
+              { label: "Date", key: "createdDate" },
+              { label: "Description", key: "description" },
+              { label: "Transaction ID", key: "transactionId" },
+              { label: "Amount", key: "amount" },
+              { label: "Type", key: "type" },
+              { label: "Balance", key: "balance" }
+            ]}
+            filename="Pocket_Wallet_Statement.csv"
+            data={csvData}
+            ref={csvLinkEl}
+          />
+      </Toolbar>
+    );
+  }
+  
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -135,7 +156,8 @@ const Transactions = ({ walletId }) => {
             setRows([...rows, ...data[0].totalData]);
           }
           setRowCount(data[0].totalCount[0].count);
-        });
+        })
+        .catch(err => console.error(err.message));
   }, [rows, walletId]);
 
   useEffect(() => {
@@ -143,6 +165,7 @@ const Transactions = ({ walletId }) => {
       fetchData(0, 10);
     }
   }, [rows, fetchData, walletId, rowCount]);
+  
 	if (!walletId) {
 		return (
 			<AppWrapper walletId={walletId}>
@@ -152,6 +175,14 @@ const Transactions = ({ walletId }) => {
 			</AppWrapper>
 		);
 	}
+
+  const fetchRawData = () => {
+    axios
+      .get(`/transactions?walletId=${walletId}`)
+      .then(res => {
+        setCsvData(res.data);
+      })
+  };
 
   const EnhancedTableHead = props => {
     const { order, orderBy, onRequestSort } = props;
