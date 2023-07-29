@@ -16,5 +16,6 @@
     "install-client": "cd frontend && npm install",
     "build-client": "cd frontend && npm run build",
     "start-client": "cd frontend && npm run start"
-  }
+  },
+  "main": "index.js"
 }
