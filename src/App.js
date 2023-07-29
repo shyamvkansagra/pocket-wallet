@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom"
-import LandingPage from "./Components/Wallet/Index";
-import Transactions from "./Components/Transactions/Index";
+import LandingPage from "./Components/Wallet/Index.js";
+import Transactions from "./Components/Transactions/Index.js";
 import { getLocal } from "./Utils/utils";
 
 const App = () => {
