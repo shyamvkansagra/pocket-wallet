@@ -48,10 +48,49 @@ router.post('/transact/:walletId', (req, res) => {
 });
 
 router.get('/transactions', (req, res) => {
-	const { walletId, skip, limit } = req.query;
-	Transaction.find({ "walletId": walletId })
+	const { walletId, skip, limit, sortBy } = req.query;
+	if (sortBy) {
+		const sortByVal = {};
+		sortByVal[sortBy.key] = sortBy.type;
+		Transaction.aggregate([
+			{ "$facet": {
+				"totalData": [
+					{ "$match": { "walletId": walletId }},
+					{ "$skip": +skip },
+					{ "$limit": +limit },
+					{ "$sort": sortByVal }
+				],
+				"totalCount": [
+					{ "$match": { "walletId": walletId }},
+					{ "$count": "count" }
+				]
+			}}
+		])
+		// Transaction.find({ "walletId": walletId }).sort(sortByVal).skip(skip).limit(limit)
 		.then(transactions => res.json(transactions))
 		.catch(err => console.log(err));
+	} else if (limit && skip) {
+		Transaction.aggregate([
+			{ "$facet": {
+				"totalData": [
+					{ "$match": { "walletId": walletId }},
+					{ "$skip": +skip },
+					{ "$limit": +limit },
+				],
+				"totalCount": [
+					{ "$match": { "walletId": walletId }},
+					{ "$count": "count" }
+				]
+			}}
+		])
+		// Transaction.find({ "walletId": walletId }).skip(skip).limit(limit)
+			.then(transactions => res.json(transactions))
+			.catch(err => console.log(err));
+	} else {
+		Transaction.find({ "walletId": walletId })
+			.then(transactions => res.json(transactions))
+			.catch(err => console.log(err));
+	}
 });
 
 module.exports = router

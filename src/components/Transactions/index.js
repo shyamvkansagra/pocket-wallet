@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import AppWrapper from '../AppWrapper/AppWrapper';
 import axios from 'axios';
 import "./transactions.css";
@@ -158,6 +158,7 @@ const Transactions = ({ walletId }) => {
   const [orderBy, setOrderBy] = React.useState('calories');
   const [page, setPage] = React.useState(0);
   const [rows, setRows] = useState([]);
+  const [rowCount, setRowCount] = useState(rows.length);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -182,17 +183,21 @@ const Transactions = ({ walletId }) => {
     [rows, order, orderBy, page, rowsPerPage],
   );
   
-  useEffect(() => {
-    if (walletId) {
-      axios
-        .get(`/transactions?walletId=${walletId}&skip=${0}&limit=${10}`)
+  const fetchData = useCallback((skip, limit) => {
+    axios
+        .get(`/transactions?walletId=${walletId}&skip=${skip}&limit=${limit}`)
         .then(response => {
           const { data } = response;
           console.log(data);
-          setRows(data);
+          setRows(data[0].totalData);
+          setRowCount(data[0].totalCount[0].count)
         });
+  }, [walletId])
+  useEffect(() => {
+    if (walletId) {
+      fetchData(0, 10);
     }
-  }, [walletId]);
+  }, [fetchData, walletId]);
 	if (!walletId) {
 		return (
 			<AppWrapper walletId={walletId}>
@@ -263,7 +268,7 @@ const Transactions = ({ walletId }) => {
             <TablePagination
               rowsPerPageOptions={[10]}
               component="div"
-              count={rows.length}
+              count={rowCount}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}
