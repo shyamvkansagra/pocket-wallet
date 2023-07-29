@@ -47,4 +47,11 @@ router.post('/transact/:walletId', (req, res) => {
 			.catch(err => console.log(err))
 });
 
+router.get('/transactions', (req, res) => {
+	const { walletId, skip, limit } = req.query;
+	Transaction.find({ "walletId": walletId })
+		.then(transactions => res.json(transactions))
+		.catch(err => console.log(err));
+});
+
 module.exports = router

@@ -93,7 +93,7 @@ const App = () => {
 	return (
 		<div className="App">
       <Routes>
-        <Route path="/" element={ <LandingPage walletId={walletId} /> } />
+        <Route path="/" element={ <LandingPage walletId={walletId} setWalletId={setWalletId} /> } />
         <Route path="transactions" element={ <Transactions walletId={walletId} /> } />
       </Routes>
     </div>

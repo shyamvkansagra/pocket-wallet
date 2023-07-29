@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import AppWrapper from '../AppWrapper/AppWrapper';
+import axios from 'axios';
 import "./transactions.css";
 
 import PropTypes from 'prop-types';
@@ -276,7 +277,16 @@ const Transactions = ({ walletId }) => {
       ),
     [order, orderBy, page, rowsPerPage],
   );
-
+  
+  useEffect(() => {
+    if (walletId) {
+      axios
+        .get(`/transactions?walletId=${walletId}&skip=${0}&limit=${10}`)
+        .then(response => {
+          console.log(response);
+        });
+    }
+  }, [walletId]);
 	if (!walletId) {
 		return (
 			<AppWrapper walletId={walletId}>

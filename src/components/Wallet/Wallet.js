@@ -47,7 +47,6 @@ const Wallet = ({ walletId }) => {
 			})
 			.then(res => {
 				const resJson = res.data;
-				console.log(resJson);
 				if (resJson.status === 200) {
 					setWalletInfo({
 						...walletInfo,

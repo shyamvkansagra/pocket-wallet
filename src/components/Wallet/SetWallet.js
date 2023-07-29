@@ -5,19 +5,20 @@ import { Box, Card, CardContent, Typography, TextField, Button } from '@mui/mate
 import { setLocal } from "../../Utils/utils";
 import "./walletStyles.css";
 
-const SetWallet = () => {
+const SetWallet = ({ setWalletId }) => {
 	const [userName, setUserName] = useState("");
 	const [balance, setBalance] = useState(0);
 	const submitWalletData = () => {
 		axios
 			.post("/setup", {
 				userName,
-				balance,
+				balance: +balance,
 			})
 			.then(function (d) {
 				const resData = d.data;
 				if (resData.code === 200) {
 					setLocal("walletId", resData.data._id);
+					setWalletId(resData.data._id)
 				}
 			})
 			.catch(function () {
