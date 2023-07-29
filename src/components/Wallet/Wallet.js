@@ -8,25 +8,39 @@ import {
 	Card,
 	Button,
 	Box,
-	Stack
+	Stack,
+	Snackbar,
 } from '@mui/material';
-
+import MuiAlert from '@mui/material/Alert';
 import "./walletStyles.css";
 import axios from "axios";
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const Wallet = ({ walletId }) => {
 	const [walletInfo, setWalletInfo] = useState({ userName: "Loading", balance: "Loading" });
 	const [type, setType] = useState("credit");
 	const [amount, setAmount] = useState(undefined);
-	const [description, setDescription] = useState("");
-	const handleAmountChange = e => setAmount(e.target.value);
-	const handleDescriptionChange = e => setDescription(e.target.value);
+	const [description, setDescription] = useState(undefined);
+	const [snackbarInfo, setSnackbarInfo] = useState({});
+	const [isAmountEmpty, setIsAmountEmpty] = useState(false);
+	const [isDescriptionEmpty, setIsDescriptionEmpty] = useState(false);
+	const handleAmountChange = e => {
+		const amountVal = e.target.value < 0 ? 0 : e.target.value;
+		setAmount(amountVal);
+		setIsAmountEmpty(!e.target.value);
+	}
+	const handleDescriptionChange = e => {
+		setDescription(e.target.value);
+		setIsDescriptionEmpty(!e.target.value);
+	}
 	const handleTypeChange = (e) => setType(e.target.value);
 
 	useEffect(() => {
 		axios
 			.get(`/wallet/${walletId}`).then((response) => {
-				// setUsers(users)
 				if (response.status === 200) {
 					const [walletData] = response.data;
 					setWalletInfo({
@@ -39,6 +53,14 @@ const Wallet = ({ walletId }) => {
 	}, [walletId]);
 
 	const handleSubmit = () => {
+		if (!amount || !description) {
+			setSnackbarInfo({
+				open: true,
+				severity: "error",
+				message: "Please fill all required data"
+			});
+			return;
+		}
 		axios
 			.post(`/transact/${walletId}`, {
 				amount: +amount,
@@ -52,14 +74,30 @@ const Wallet = ({ walletId }) => {
 						...walletInfo,
 						balance: resJson.data.balance
 					});
-					setAmount(0);
+					setAmount("");
 					setDescription("");
+					setIsAmountEmpty(false);
+					setIsDescriptionEmpty(false);
+					setSnackbarInfo({
+						open: true,
+						severity: "success",
+						message: "Your transaction was successful!"
+					});
+				} else if (resJson.error) {
+					setSnackbarInfo({
+						open: true,
+						severity: "error",
+						message: resJson.message
+					});
 				}
-				// console.log(res);
 			})
 			.catch(err => {
 				console.error(err);
 			})
+	}
+
+	const handleSnackbarClose = () => {
+		setSnackbarInfo({ ...snackbarInfo, open: false });
 	}
 
 	return (
@@ -89,6 +127,7 @@ const Wallet = ({ walletId }) => {
 								inputProps={{min: 0}}
 								onChange={handleAmountChange}
 								value={amount}
+								error={isAmountEmpty}
 							/>
 							<TextField
 								required
@@ -98,6 +137,7 @@ const Wallet = ({ walletId }) => {
 								margin="normal"
 								onChange={handleDescriptionChange}
 								value={description}
+								error={isDescriptionEmpty}
 							/>
 							<ToggleButtonGroup
 								color="primary"
@@ -120,6 +160,11 @@ const Wallet = ({ walletId }) => {
 					</Box>
 				</CardContent>
 			</Card>
+			<Snackbar open={snackbarInfo.open} autoHideDuration={3000} onClose={handleSnackbarClose}>
+				<Alert onClose={handleSnackbarClose} severity={snackbarInfo.severity} sx={{ width: '100%' }}>
+          {snackbarInfo.message}
+        </Alert>
+      </Snackbar>
 		</div>
 	);
 }

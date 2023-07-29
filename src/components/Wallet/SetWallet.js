@@ -1,14 +1,37 @@
 import React, { useState } from "react";
 import axios from 'axios';
-import { Box, Card, CardContent, Typography, TextField, Button } from '@mui/material';
+import {
+	Box,
+	Card,
+	CardContent,
+	Typography,
+	TextField,
+	Button,
+	Snackbar
+} from '@mui/material';
+import MuiAlert from '@mui/material/Alert';
 
 import { setLocal } from "../../utils/utils";
 import "./walletStyles.css";
 
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 const SetWallet = ({ setWalletId }) => {
 	const [userName, setUserName] = useState("");
-	const [balance, setBalance] = useState(0);
+	const [balance, setBalance] = useState("");
+	const [isUserNameEmpty, setIsUserNameEmpty] = useState(false);
+	const [snackbarInfo, setSnackbarInfo] = useState({});
 	const submitWalletData = () => {
+		if (!userName) {
+			setSnackbarInfo({
+				open: true,
+				severity: "error",
+				message: "Please fill all required data"
+			})
+			return;
+		}
 		axios
 			.post("/setup", {
 				userName,
@@ -18,15 +41,25 @@ const SetWallet = ({ setWalletId }) => {
 				const resData = d.data;
 				if (resData.code === 200) {
 					setLocal("walletId", resData.data._id);
-					setWalletId(resData.data._id)
+					setWalletId(resData.data._id);
+					setIsUserNameEmpty(false);
 				}
 			})
 			.catch(function () {
 				alert("Could not create wallet. Please try again");
 			});
 	}
-	const handleUserNameChange = (e) => setUserName(e.target.value);
-	const handleBalanceChange = (e) => setBalance(e.target.value);
+	const handleUserNameChange = (e) => {
+		setUserName(e.target.value);
+		setIsUserNameEmpty(!e.target.value);
+	}
+	const handleBalanceChange = (e) => {
+		const balanceVal = e.target.value < 0 ? 0 : e.target.value;
+		setBalance(balanceVal);
+	}
+	const handleSnackbarClose = () => {
+		setSnackbarInfo({ ...snackbarInfo, open: false });
+	}
 	
 	return (
 		<div className="set-wallet-container">
@@ -48,6 +81,8 @@ const SetWallet = ({ setWalletId }) => {
 								id="outlined-required"
 								label="Username"
 								onChange={handleUserNameChange}
+								error={isUserNameEmpty}
+								value={userName}
 							/>
 							<TextField
 								fullWidth
@@ -56,6 +91,8 @@ const SetWallet = ({ setWalletId }) => {
 								margin="normal"
 								type="number"
 								onChange={handleBalanceChange}
+								inputProps={{min: 0}}
+								value={balance}
 							/>
 							<Button
 								sx={{ marginTop: "20px" }}
@@ -69,6 +106,11 @@ const SetWallet = ({ setWalletId }) => {
 					</Box>
 				</CardContent>
 			</Card>
+			<Snackbar open={snackbarInfo.open} autoHideDuration={3000} onClose={handleSnackbarClose}>
+				<Alert onClose={handleSnackbarClose} severity={snackbarInfo.severity} sx={{ width: '100%' }}>
+          {snackbarInfo.message}
+        </Alert>
+      </Snackbar>
 		</div>
 	);
 }

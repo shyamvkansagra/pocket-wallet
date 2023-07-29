@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState, useRef } from 'react';
 import AppWrapper from '../AppWrapper/AppWrapper';
 import axios from 'axios';
 import { CSVLink } from 'react-csv';
+import { Link } from 'react-router-dom';
 import "./transactions.css";
 
 import {
@@ -70,6 +71,7 @@ const Transactions = ({ walletId }) => {
   const [rows, setRows] = useState([]);
   const [rowCount, setRowCount] = useState(rows.length);
   const [csvData, setCsvData] = useState([]);
+  const [noData, setNoData] = useState(true);
 
   const csvLinkEl = useRef(null);
   useEffect(() => {
@@ -93,11 +95,13 @@ const Transactions = ({ walletId }) => {
         >
           Transactions
         </Typography>
-          <Tooltip title="Download CSV">
-            <IconButton onClick={fetchRawData}>
-              <FileDownloadIcon />
-            </IconButton>
-          </Tooltip>
+          <span disabled={!rows.length}>
+            <Tooltip title="Download CSV">
+              <IconButton onClick={fetchRawData}>
+                <FileDownloadIcon />
+              </IconButton>
+            </Tooltip>
+          </span>
           <CSVLink
             headers={[
               { label: "Date", key: "createdDate" },
@@ -120,14 +124,14 @@ const Transactions = ({ walletId }) => {
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
 
-    const sortOrder = isAsc ? 1 : -1;
+    const sortOrder = isAsc ? -1 : 1;
     fetchData(0, 10, property, sortOrder);
     setPage(0);
   };
 
   const handleChangePage = (event, newPage) => {
     if (newPage > page && rows.length < rowCount) {
-      fetchData(newPage*10, 10, orderBy, order === "asc" ? -1 : 1);
+      fetchData(newPage*10, 10, orderBy, order === "asc" ? 1 : -1);
     }
     setPage(newPage);
   };
@@ -151,26 +155,27 @@ const Transactions = ({ walletId }) => {
         .then(response => {
           const { data } = response;
           if (skip === 0) {
-            setRows(data[0].totalData);
+            setRows(data[0]?.totalData);
           } else {
-            setRows([...rows, ...data[0].totalData]);
+            setRows([...rows, ...data[0]?.totalData]);
           }
-          setRowCount(data[0].totalCount[0].count);
+          setRowCount(data[0]?.totalCount[0]?.count || 0);
+          setNoData(false);
         })
         .catch(err => console.error(err.message));
   }, [rows, walletId]);
 
   useEffect(() => {
-    if (!rows.length && walletId) {
+    if (!rows.length && walletId && noData) {
       fetchData(0, 10);
     }
-  }, [rows, fetchData, walletId, rowCount]);
-  
+  }, [noData, rows, fetchData, walletId, rowCount]);
+
 	if (!walletId) {
 		return (
 			<AppWrapper walletId={walletId}>
 				<div className="transactions-container">
-					No wallet is set. Please setup your wallet first.
+					No wallet is set. Please setup your wallet first. <Link className='unstyled-link' to="/"><Typography variant='h6'>Go to Home Page</Typography></Link>
 				</div>	
 			</AppWrapper>
 		);
