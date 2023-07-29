@@ -15,7 +15,7 @@ import "./walletStyles.css";
 import axios from "axios";
 
 const Wallet = ({ walletId }) => {
-	const [walletInfo, setWalletInfo] = useState({});
+	const [walletInfo, setWalletInfo] = useState({ userName: "Loading", balance: "Loading" });
 	const [type, setType] = useState("credit");
 	const [amount, setAmount] = useState(undefined);
 	const [description, setDescription] = useState("");
