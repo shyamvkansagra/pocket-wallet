@@ -3,6 +3,9 @@ Welcome to Pocket Wallet app. It is a digital wallet web application.
 ## App URL
 https://pocket-wallet-ylp6.onrender.com/
 
+## Product tour
+https://www.loom.com/share/72bd05f7534340caa6b874e6848afd7b
+
 ## What can this app do?
 - Setup your wallet with your name and with optional initial balance
 - Remembers your set wallet if you revisit
@@ -152,24 +155,24 @@ Collections: wallets, transactions
 
 **Wallet schema**
 ```
-| Key | Data type | Required? | Default |
-|--|--|--|--|
-| balance | Number | Yes |  |
-| userName | String | Yes |  |
-| transactionId | String | Yes |  |
-| createdDate | Date | Yes | Date.now |
+| Key           | Data type | Required | Default  |
+|---------------|-----------|----------|----------|
+| balance       | Number    | Yes      |          |
+| userName      | String    | Yes      |          |
+| transactionId | String    | Yes      |          |
+| createdDate   | Date      | Yes      | Date.now |
 ```
 **Transaction schema**
 ```
-| Key | Data type | Required? | Default |
-|--|--|--|--|
-| walletId | String | Yes |  |
-| amount | Number | Yes |  |
-| balance | Number | Yes |  |
-| description | String | Yes |  |
-| type | String | Yes |  |
-| transactionId | String | Yes |  |
-| createdDate | Date | Yes | Date.now |
+| Key           | Data type | Required | Default  |
+|---------------|-----------|----------|----------|
+| walletId      | String    | Yes      |          |
+| amount        | Number    | Yes      |          |
+| balance       | Number    | Yes      |          |
+| description   | String    | Yes      |          |
+| type          | String    | Yes      |          |
+| transactionId | String    | Yes      |          |
+| createdDate   | Date      | Yes      | Date.now |
 ```
 
 ### UI Design
