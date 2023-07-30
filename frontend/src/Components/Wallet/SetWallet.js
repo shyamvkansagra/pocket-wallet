@@ -23,8 +23,9 @@ const SetWallet = ({ setWalletId, endpoint }) => {
 	const [balance, setBalance] = useState("");
 	const [isUserNameEmpty, setIsUserNameEmpty] = useState(false);
 	const [snackbarInfo, setSnackbarInfo] = useState({});
+	const [showLoading, setShowLoading] = useState(false);
 	const submitWalletData = () => {
-		if (!userName) {
+		if (!userName.trim()) {
 			setSnackbarInfo({
 				open: true,
 				severity: "error",
@@ -32,6 +33,7 @@ const SetWallet = ({ setWalletId, endpoint }) => {
 			})
 			return;
 		}
+		setShowLoading(true);
 		axios
 			.post(`${endpoint}/setup`, {
 				userName,
@@ -44,14 +46,20 @@ const SetWallet = ({ setWalletId, endpoint }) => {
 					setWalletId(resData.data._id);
 					setIsUserNameEmpty(false);
 				}
+				setShowLoading(false);
 			})
 			.catch(function () {
-				alert("Could not create wallet. Please try again");
+				setSnackbarInfo({
+					open: true,
+					message: "Could not create wallet. Please try again",
+					severity: "error"
+				});
+				setShowLoading(false);
 			});
 	}
 	const handleUserNameChange = (e) => {
 		setUserName(e.target.value);
-		setIsUserNameEmpty(!e.target.value);
+		setIsUserNameEmpty(!e.target.value.trim());
 	}
 	const handleBalanceChange = (e) => {
 		const balanceVal = e.target.value < 0 ? 0 : e.target.value;
@@ -83,6 +91,7 @@ const SetWallet = ({ setWalletId, endpoint }) => {
 								onChange={handleUserNameChange}
 								error={isUserNameEmpty}
 								value={userName}
+								inputProps={{maxlength: 12}}
 							/>
 							<TextField
 								fullWidth
@@ -101,7 +110,8 @@ const SetWallet = ({ setWalletId, endpoint }) => {
 								onClick={() => {
 									submitWalletData();
 								}}
-							>Submit</Button>
+								disabled={showLoading}
+							>{showLoading ? "Submitting..." : "Submit"}</Button>
 						</CardContent>
 					</Box>
 				</CardContent>

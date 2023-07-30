@@ -20,13 +20,14 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 });
 
 const Wallet = ({ walletId, endpoint }) => {
-	const [walletInfo, setWalletInfo] = useState({ userName: "Loading", balance: "Loading" });
+	const [walletInfo, setWalletInfo] = useState({ userName: "", balance: "Loading" });
 	const [type, setType] = useState("credit");
 	const [amount, setAmount] = useState(undefined);
 	const [description, setDescription] = useState(undefined);
 	const [snackbarInfo, setSnackbarInfo] = useState({});
 	const [isAmountEmpty, setIsAmountEmpty] = useState(false);
 	const [isDescriptionEmpty, setIsDescriptionEmpty] = useState(false);
+	const [showLoading, setShowLoading] = useState(false);
 	const handleAmountChange = e => {
 		const amountVal = e.target.value < 0 ? 0 : e.target.value;
 		setAmount(amountVal);
@@ -34,11 +35,11 @@ const Wallet = ({ walletId, endpoint }) => {
 	}
 	const handleDescriptionChange = e => {
 		setDescription(e.target.value);
-		setIsDescriptionEmpty(!e.target.value);
+		setIsDescriptionEmpty(!e.target.value.trim());
 	}
 	const handleTypeChange = (e) => setType(e.target.value);
 
-	useEffect(() => {
+	const fetchWalletData = (endpoint, walletId) => {
 		axios
 			.get(`${endpoint}/wallet/${walletId}`).then((response) => {
 				if (response.status === 200) {
@@ -49,11 +50,18 @@ const Wallet = ({ walletId, endpoint }) => {
 					});
 				}
 			})
-			.catch((err) => console.log(err));
+			.catch((err) => {
+				console.log(err)
+				setShowLoading(false);
+			});
+	}
+
+	useEffect(() => {
+		fetchWalletData(endpoint, walletId);
 	}, [walletId, endpoint]);
 
 	const handleSubmit = () => {
-		if (!amount || !description) {
+		if (!amount || !description.trim()) {
 			setSnackbarInfo({
 				open: true,
 				severity: "error",
@@ -61,6 +69,7 @@ const Wallet = ({ walletId, endpoint }) => {
 			});
 			return;
 		}
+		setShowLoading(true);
 		axios
 			.post(`${endpoint}/transact/${walletId}`, {
 				amount: +amount,
@@ -83,16 +92,19 @@ const Wallet = ({ walletId, endpoint }) => {
 						severity: "success",
 						message: "Your transaction was successful!"
 					});
+					setShowLoading(false);
 				} else if (resJson.error) {
 					setSnackbarInfo({
 						open: true,
 						severity: "error",
 						message: resJson.message
 					});
+					setShowLoading(false);
 				}
 			})
 			.catch(err => {
 				console.error(err);
+				setShowLoading(false);
 			})
 	}
 
@@ -103,9 +115,9 @@ const Wallet = ({ walletId, endpoint }) => {
 	return (
 		<div className="set-wallet-container">
 			<Stack direction="row" spacing={2} sx={{ marginBottom: "20px", display: "flex", justifyContent: "space-around" }}>
-						<Typography variant="h6" sx={{fontWeight: "bold"}}>{`Username: ${walletInfo.userName}`}</Typography>
-						<Typography variant="h6" sx={{fontWeight: "bold"}}>{`Balance: ${walletInfo.balance}`}</Typography>
-					</Stack>
+				<Typography variant="h6" sx={{fontWeight: "bold"}}>{`Username: ${walletInfo.userName || "Loading"}`}</Typography>
+				<Typography variant="h6" sx={{fontWeight: "bold"}}>{`Balance: ${walletInfo.balance}`}</Typography>
+			</Stack>
 			<Card>
 				<CardContent>
 					<Box
@@ -138,6 +150,7 @@ const Wallet = ({ walletId, endpoint }) => {
 								onChange={handleDescriptionChange}
 								value={description}
 								error={isDescriptionEmpty}
+								inputProps={{maxlength: 30}}
 							/>
 							<ToggleButtonGroup
 								color="primary"
@@ -155,7 +168,8 @@ const Wallet = ({ walletId, endpoint }) => {
 								fullWidth
 								variant="contained"
 								onClick={handleSubmit}
-							>Submit</Button>
+								disabled={showLoading || !walletInfo.userName}
+							>{showLoading ? "Submitting..." : "Submit"}</Button>
 						</CardContent>
 					</Box>
 				</CardContent>

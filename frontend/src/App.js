@@ -5,7 +5,7 @@ import Transactions from "./Components/Transactions/Transactions";
 import { getLocal } from "./Utils/utils";
 
 const endpoint = "https://pocket-wallet-xlet.onrender.com";
-// const endpoint =  "http://localhost:5000";
+// const endpoint =  "http://localhost:3000";
 
 const App = () => {
 	const [walletId, setWalletId] = useState("");

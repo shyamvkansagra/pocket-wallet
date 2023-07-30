@@ -19,7 +19,8 @@ import {
   Typography,
   Paper,
   IconButton,
-  Tooltip
+  Tooltip,
+  CircularProgress
  } from '@mui/material';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { visuallyHidden } from '@mui/utils';
@@ -72,6 +73,7 @@ const Transactions = ({ walletId, endpoint }) => {
   const [rowCount, setRowCount] = useState(rows.length);
   const [csvData, setCsvData] = useState([]);
   const [noData, setNoData] = useState(true);
+  const [showLoading, setShowLoading] = useState(false);
 
   const csvLinkEl = useRef(null);
   useEffect(() => {
@@ -150,6 +152,7 @@ const Transactions = ({ walletId, endpoint }) => {
   );
   
   const fetchData = useCallback((skip, limit, sortBy, sortOrder) => {
+    setShowLoading(true);
     axios
         .get(`${endpoint}/transactions?walletId=${walletId}&skip=${skip}&limit=${limit}${sortBy ? `&sortBy=${sortBy}&sortOrder=${sortOrder}` : ""}`)
         .then(response => {
@@ -161,6 +164,7 @@ const Transactions = ({ walletId, endpoint }) => {
           }
           setRowCount(data[0]?.totalCount[0]?.count || 0);
           setNoData(false);
+          setShowLoading(false);
         })
         .catch(err => console.error(err.message));
   }, [rows, walletId, endpoint]);
@@ -182,10 +186,12 @@ const Transactions = ({ walletId, endpoint }) => {
 	}
 
   const fetchRawData = () => {
+    setShowLoading(true);
     axios
       .get(`${endpoint}/transactions?walletId=${walletId}`)
       .then(res => {
         setCsvData(res.data);
+        setShowLoading(false);
       })
   };
 
@@ -295,6 +301,9 @@ const Transactions = ({ walletId, endpoint }) => {
             />
           </Paper>
         </Box>
+        {showLoading && 
+          <CircularProgress sx={{ margin: "0 auto", position: "absolute" }}/>
+        }
 			</div>
 		</AppWrapper>
 	);

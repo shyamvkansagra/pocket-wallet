@@ -3,11 +3,12 @@
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	margin-top: 50px;
+	margin-top: 20px;
 }
 
 .set-wallet-container {
 	margin-top: 20px;
+	width: 380px;
 }
 
 .setup-form-heading {
