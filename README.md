@@ -1,70 +1,201 @@
-# Getting Started with Create React App
+Welcome to Pocket Wallet app. It is a digital wallet web application.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## App URL
+https://pocket-wallet-ylp6.onrender.com/
 
-## Available Scripts
+## What can this app do?
+- Setup your wallet with your name and with optional initial balance
+- Remembers your set wallet if you revisit
+- View your balance
+- Debit/Credit some amount on your balance with easy to use UI
+- View all transactions in table format
+- Sort table according to date and amount
+- Pagination of data
+- Download all transaction data as CSV
+- Data validations as applicable
 
-In the project directory, you can run:
+## Tech stack
+- ReactJS
+- MUI
+- Node/ExpressJS
+- MongoDB
 
-### `npm start`
+## Run Locally
+Clone the repo using 
+`git clone https://github.com/shyamvkansagra/pocket-wallet.git`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Make sure you have `node` available on your system.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+In root directory, run commands in terminal
+For installing backend: `npm run install-server`
+For installing frontend: `npm run install-client`
 
-### `npm test`
+To start the app, you need to start backend server as well as frontend app. Stay in root directory and run following commands in terminal:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+For starting backend: `npm run start-server`
+(It starts a server on port 5000 and also connects to MongoDB if it shows "Database connected successfully" in your terminal console)
 
-### `npm run build`
+For starting frontend: `npm run start-client`
+(It will open up localhost:3000 in your browser and should show the landing page)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Deployment
+App is deployed using `https://render.com/`'s free hosting services. 
+Created a web server(node - backend) and static site (node - frontend) and added the appropriate commands. Deployment automatically triggers if we push code to `main` branch.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Database is created using MongoDB Atlas cloud service. A cluster was created and collections were added in it to store data. render.com's IP was added to whitelist to allow the access. Storage limit is 512 MB on my free plan.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Deployed frontend URL: https://pocket-wallet-ylp6.onrender.com
+Deployed backend URL: https://pocket-wallet-xlet.onrender.com
 
-### `npm run eject`
+Mongo cluster URL: https://cloud.mongodb.com/v2/64c29bd8771e8e34c9128167#/clusters
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+"Render" dashboard: https://dashboard.render.com/
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+##### I have chosen "Free" plans while creating accounts, so some delay in API calls is expected.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Technical design
+### Folder structure
+A separate folders have been used for frontend and backend. Backend covers APIs and Database connection related code and Frontend covers UI related code. 
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Backend folder has "api" and "models" folder to store API endpoint definitions and database schema respectively.
 
-## Learn More
+Frontend folder has its own package file to run and install frontend specific libraries. 
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Apart from this, .env and .gitignore have been added in root folder.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### API endpoints
+**Wallet APIs**
+Setup a wallet
+```
+Endpoint: "/setup"
+Type: POST
+Payload: {
+	"balance": 560,
+	"userName": "Testqwerty"
+}
+Response: {
+	code: 200,
+	data: {
+		"balance": 560,
+		"createdDate": "2023-07-30T08:32:40.884Z",
+		"transactionId": "1690705960881",
+		"userName": "Testqwerty",
+		"_id": "64c62028a6c9c0248dc6c0d4"
+	}
+}
+```
+Fetch Wallet
+```
+Endpoint: "/wallet/:walletId"
+Type: GET
+Params: walletId
+Response: [{
+	"balance": 560
+	"createdDate": "2023-07-30T08:32:40.884Z"
+	"transactionId": "1690705960881"
+	"userName": "Testqwerty"
+	"_id": "64c62028a6c9c0248dc6c0d4"
+}]
+```
 
-### Code Splitting
+**Transaction APIs**
+Make a transaction
+```
+Endpoint: "/transact/:walletId"
+Type: POST
+Params: walletId
+Payload: {
+    "amount": 3746,
+    "description": "oiuo",
+    "type": "credit"
+}
+Response: {
+    "status": 200,
+    "data": {
+        "balance": 4306,
+        "transactionId": "1690706353301"
+    }
+}
+```
+Fetch your transactions
+```
+Endpoint: "/transactions?walletId=walletId&skip=0&limit=10&sortBy=amount&sortOrder=1"
+Type: GET
+Query: walletId,skip, limit, sortBy, sortOrder
+Response: [
+    {
+        "totalData": [
+            {
+                "_id": "64c621b1a6c9c0248dc6c0d9",
+                "walletId": "64c62028a6c9c0248dc6c0d4",
+                "amount": 3746,
+                "balance": 4306,
+                "description": "oiuo",
+                "type": "credit",
+                "transactionId": "1690706353301",
+                "createdDate": "2023-07-30T08:39:13.301Z"
+            }
+        ],
+        "totalCount": [
+            {
+                "count": 1
+            }
+        ]
+    }
+]
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### Database design
+Database: MongoDB Atlas
+Cluster: ClusterPocketWallet
+Collections: wallets, transactions
 
-### Analyzing the Bundle Size
+**Wallet schema**
+```
+| Key | Data type | Required? | Default |
+|--|--|--|--|
+| balance | Number | Yes |  |
+| userName | String | Yes |  |
+| transactionId | String | Yes |  |
+| createdDate | Date | Yes | Date.now |
+```
+**Transaction schema**
+```
+| Key | Data type | Required? | Default |
+|--|--|--|--|
+| walletId | String | Yes |  |
+| amount | Number | Yes |  |
+| balance | Number | Yes |  |
+| description | String | Yes |  |
+| type | String | Yes |  |
+| transactionId | String | Yes |  |
+| createdDate | Date | Yes | Date.now |
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### UI Design
+CSS Library: Material UI
 
-### Making a Progressive Web App
+2 routes: 
+- Home: "/",
+- Transactions: "/transactions"
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Local storage: For saving wallet ID
 
-### Advanced Configuration
+UI Components:
+- App wrapper
+- Wallet
+- Transactions
+- Util
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Next Steps
+This application can be enhanced and scaled with the following:
+- Auth Layer
+- Aria accessibility
+- Error capturing and Logging (frontend & backend)
+- Unit/Integration Tests with frameworks
+- Instrumentation and analytics (GA/MS-Clarity)
+- Data caching in frontend & backend
+- Code refactoring / UX enhancements
+- Log writing to store data in DB in case of large number of writes per second
+- Data cleanup to delete older data from DB
+- Backup of DB and servers

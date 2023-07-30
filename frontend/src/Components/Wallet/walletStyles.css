@@ -14,3 +14,9 @@
 .setup-form-heading {
 	text-align: center;
 }
+
+@media only screen and (max-width: 600px) {
+	.set-wallet-container {
+		width: 280px;
+	}		
+}

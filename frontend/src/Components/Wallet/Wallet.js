@@ -120,12 +120,7 @@ const Wallet = ({ walletId, endpoint }) => {
 			</Stack>
 			<Card>
 				<CardContent>
-					<Box
-						sx={{
-							width: "auto",
-							minWidth: 300,
-						}}
-					>
+					<Box>
 						<span className="setup-form-heading">
 							<Typography>Make a transaction</Typography>
 						</span>
