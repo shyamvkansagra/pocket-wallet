@@ -48,6 +48,7 @@ Created a web server(node - backend) and static site (node - frontend) and added
 Database is created using MongoDB Atlas cloud service. A cluster was created and collections were added in it to store data. render.com's IP was added to whitelist to allow the access. Storage limit is 512 MB on my free plan.
 
 Deployed frontend URL: https://pocket-wallet-ylp6.onrender.com
+
 Deployed backend URL: https://pocket-wallet-xlet.onrender.com
 
 Mongo cluster URL: https://cloud.mongodb.com/v2/64c29bd8771e8e34c9128167#/clusters
@@ -68,6 +69,7 @@ Apart from this, .env and .gitignore have been added in root folder.
 
 ### API endpoints
 **Wallet APIs**
+
 Setup a wallet
 ```
 Endpoint: "/setup"
@@ -102,6 +104,7 @@ Response: [{
 ```
 
 **Transaction APIs**
+
 Make a transaction
 ```
 Endpoint: "/transact/:walletId"
@@ -150,7 +153,9 @@ Response: [
 
 ### Database design
 Database: MongoDB Atlas
+
 Cluster: ClusterPocketWallet
+
 Collections: wallets, transactions
 
 **Wallet schema**
